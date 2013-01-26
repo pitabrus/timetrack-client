@@ -195,7 +195,7 @@ class Request
     url = File.join($options[:url], @name)
     uri = URI.parse(url)
     uri.query = "digest=#{encode_logpass}"
-    response = Net::HTTP.post_form(uri, { 
+    response = Net::HTTP.post_form(uri, {
       name:      required_option("time entry name", $options[:name]),
       project:   required_option("project name", $options[:project]),
       real_time: required_option("real time", $options[:real_time]),
@@ -241,13 +241,13 @@ def main()
   load_config!
   getopts!
 
-  time_entries = Request.new("time_entries")
 
   case $tasks[0]
   when "time-entries", "te"
+    time_entries = Request.new("time_entries")
     case $tasks[1]
     when "get"
-      time_entries.print(["id", 4], ["project", 10], ["name", 25], ["real_time", 5])
+      time_entries.print(["id", 4], ["project", 10], ["real_time", 5])
     when "create", "c"
       response = time_entries.create
       if response["response"]
@@ -259,6 +259,15 @@ def main()
       else
         puts "Bad response, please report me about this!"
       end
+    end
+
+  when "articles"
+    articles = Request.new("articles")
+    case $tasks[1]
+    when "get"
+      puts articles.print(["importance", 1], ["title", 15], ["short_description", 40])
+    when "create", "c"
+      puts "Not supported yet"
     end
   end
 
