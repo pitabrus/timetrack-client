@@ -13,7 +13,7 @@ require "curses"
 VERSION = "0.9"
 
 $options = {
-  url: "http://localhost:3000/api",
+  url: "http://task-track.herokuapp.com/api",
   status: "finished",
   date: Time.now.strftime("%Y-%m-%d")
 }
@@ -25,8 +25,6 @@ $tasks = ARGV
 
 def getopts!
   OptionParser.new do |opts|
-    opts.banner = "You do it wrong nigga."
-
     opts.on("-e", "--email email", "Email") do |v|
       $options[:email] = v
     end
@@ -247,7 +245,7 @@ def main()
     time_entries = Request.new("time_entries")
     case $tasks[1]
     when "get"
-      time_entries.print(["id", 4], ["project", 10], ["real_time", 5])
+      time_entries.print(["id", 4], ["project", 10], ["name", 15], ["real_time", 5])
     when "create", "c"
       response = time_entries.create
       if response["response"]
