@@ -102,6 +102,7 @@ end
 # Require option anyway
 def required_option(name, option)
   unless option
+    # BUG: `print` raise error. Why?
     printf "Type #{name}: "
     option = STDIN.gets.chomp
   end
@@ -217,10 +218,10 @@ class Request
     elsif response["error"]
       # TODO: colored print
       response["error"]["messages"].each do |e|
-        puts e
+        abort e
       end
     else
-      puts "Bad response, please report me about this!"
+      abort "Bad response, please report me about this!"
     end
   end
   #TODO: Articles, Statistics
@@ -235,40 +236,36 @@ end
 
 
 
-def main()
-  load_config!
-  getopts!
+
+load_config!
+getopts!
 
 
-  case $tasks[0]
-  when "time-entries", "te"
-    time_entries = Request.new("time_entries")
-    case $tasks[1]
-    when "get"
-      time_entries.print(["id", 4], ["project", 10], ["name", 15], ["real_time", 5])
-    when "create", "c"
-      response = time_entries.create
-      if response["response"]
-        puts response["response"]["status"]
-      elsif response["error"]
-        response["error"]["messages"].each do |e|
-          puts e
-        end
-      else
-        puts "Bad response, please report me about this!"
+case $tasks[0]
+when "time-entries", "te"
+  time_entries = Request.new("time_entries")
+  case $tasks[1]
+  when "get"
+    time_entries.print(["id", 4], ["project", 10], ["name", 15], ["real_time", 5])
+  when "create", "c"
+    response = time_entries.create
+    if response["response"]
+      puts response["response"]["status"]
+    elsif response["error"]
+      response["error"]["messages"].each do |e|
+        abort e
       end
-    end
-
-  when "articles"
-    articles = Request.new("articles")
-    case $tasks[1]
-    when "get"
-      puts articles.print(["importance", 1], ["title", 15], ["short_description", 40])
-    when "create", "c"
-      puts "Not supported yet"
+    else
+      abort "Bad response, please report me about this!"
     end
   end
 
-
+when "articles"
+  articles = Request.new("articles")
+  case $tasks[1]
+  when "get"
+    puts articles.print(["importance", 1], ["title", 15], ["short_description", 40])
+  when "create", "c"
+    abort "Not supported yet"
+  end
 end
-main
